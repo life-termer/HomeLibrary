@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using HomeLibrary.DAL;
 using HomeLibrary.Models;
+using PagedList;
 
 namespace HomeLibrary.Controllers
 {
@@ -17,9 +18,68 @@ namespace HomeLibrary.Controllers
         private BookContext db = new BookContext();
 
         // GET: Book
-        public ActionResult Index()
+        public ActionResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            return View(db.Books.ToList());
+            if (User.IsInRole("Admin"))
+            {
+                this.Session["userrole"] = "Admin";
+            }
+            else
+                this.Session["userrole"] = "User";
+
+            ViewBag.CurrentSort = sortOrder;
+            /*The ViewBag variables are used so that the view can configure the column 
+            heading hyperlinks with the appropriate query string values:*/
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.LenghtSortParam = sortOrder == "Lenght" ? "lenght_desc" : "Lenght";
+            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+            
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+           
+            ViewBag.CurrentFilter = searchString;
+            var books = from s in db.Books
+                           select s;
+            //Add filtering functionality
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                books = books.Where(s => s.Title.Contains(searchString)
+                                       || s.Author.Contains(searchString));
+            }
+            //Add sorting functionality
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    books = books.OrderByDescending(s => s.Title);
+                    break;
+                case "Lenght":
+                    books = books.OrderBy(s => s.Length);
+                    break;
+                case "lenght_desc":
+                    books = books.OrderByDescending(s => s.Length);
+                    break;
+                case "Date":
+                    books = books.OrderBy(s => s.PublicDate);
+                    break;
+                case "date_desc":
+                    books = books.OrderByDescending(s => s.PublicDate);
+                    break;
+                default:
+                    books = books.OrderBy(s => s.Title);
+                    break;
+            }
+
+            //Add paging functionality
+            int pageSize = 6;
+            int pageNumber = (page ?? 1);
+            return View(books.ToPagedList(pageNumber, pageSize));
+
         }
 
         // GET: Book/Details/5
@@ -37,7 +97,7 @@ namespace HomeLibrary.Controllers
             return View(book);
         }
 
-        // GET: Book/Create
+        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
             return View();
@@ -60,7 +120,7 @@ namespace HomeLibrary.Controllers
             return View(book);
         }
 
-        // GET: Book/Edit/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -75,7 +135,7 @@ namespace HomeLibrary.Controllers
             return View(book);
         }
 
-        // POST: Book/Edit/5
+        [Authorize(Roles = "Admin")]
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -91,7 +151,7 @@ namespace HomeLibrary.Controllers
             return View(book);
         }
 
-        // GET: Book/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -106,7 +166,7 @@ namespace HomeLibrary.Controllers
             return View(book);
         }
 
-        // POST: Book/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
@@ -124,6 +184,18 @@ namespace HomeLibrary.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+        [AllowAnonymous]
+        public ActionResult About()
+        {
+            IQueryable<BookTypeGorup> data = from book in db.Books
+                                             group book by book.Type into typeBook
+                                             select new BookTypeGorup()
+                                             {
+                                                 BookType = typeBook.Key,
+                                                 BookCount = typeBook.Count()
+                                             };
+            return View(data.ToList());
         }
     }
 }

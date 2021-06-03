@@ -18,39 +18,38 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Home Library", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("Home Library", "Index", "Book", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                   <li>@Html.ActionLink("About", "About", "Book")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
         </div>
     </div>
     <div class="container body-content">
-        <div class="jumbotron">
+        <div class="jumbotron text-center">
             <h2>Home Library</h2>
-            @using Microsoft.AspNet.Identity
+
             @if (Request.IsAuthenticated)
             {
-                <p>
-                    @Html.ActionLink("Hello, " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
-                </p>
+                @Html.ActionLink("Hello, " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
+
                 if ((string)this.Session["userrole"] == "Admin")
                 {
-                    <p>You have rights to create, delete or update books.</p>
+                    @:You have rights to create, delete or update books.
                 }
                 else
                 {
-                    <p>You have read only rights.</p>
+                    @:You have read only rights.
                 }
             }
             else
             {
-             <h3>You must log in or register to use this Application.</h3>
+                @:You need to sign in to use this Application.
             }
+
         </div>
         @RenderBody()
         <hr />

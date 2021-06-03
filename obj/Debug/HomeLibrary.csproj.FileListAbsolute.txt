@@ -106,3 +106,7 @@ C:\Users\Admin\Documents\GitHub\HomeLibrary\obj\Debug\HomeLibrary.csproj.CoreCom
 C:\Users\Admin\Documents\GitHub\HomeLibrary\obj\Debug\HomeLibrary.csproj.CopyComplete
 C:\Users\Admin\Documents\GitHub\HomeLibrary\obj\Debug\HomeLibrary.dll
 C:\Users\Admin\Documents\GitHub\HomeLibrary\obj\Debug\HomeLibrary.pdb
+C:\Users\Admin\Documents\GitHub\HomeLibrary\bin\PagedList.dll
+C:\Users\Admin\Documents\GitHub\HomeLibrary\bin\PagedList.Mvc.dll
+C:\Users\Admin\Documents\GitHub\HomeLibrary\bin\PagedList.xml
+C:\Users\Admin\Documents\GitHub\HomeLibrary\bin\PagedList.Mvc.xml
