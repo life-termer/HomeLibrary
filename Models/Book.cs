@@ -18,7 +18,6 @@ namespace HomeLibrary.Models
         [Required]
         public string Author { get; set; }
         public string Genre { get; set; }
-        
         public Type Type { get; set; }
         public string Language { get; set; }
         [Display(Name = "Publication date")]
